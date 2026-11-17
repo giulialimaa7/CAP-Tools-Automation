@@ -2,15 +2,10 @@
   "manifest_version": 3,
   "name": "GENERATE-XML",
   "version": "1.0",
-  "description": "Extensão para coletar dados da Enel e gerar XML",
+  "description": "Extensão para coletar dados e gerar XML",
   "permissions": [
     "activeTab",
-    "scripting",
-    "downloads"
-  ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
+    "scripting"
   ],
   "background": {
     "service_worker": "background.js",
@@ -21,7 +16,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://www.eneldistribuicao.com.br/PortalGD/ENELRJ/*"],
       "js": ["content.js"],
       "css": ["styles.css"]
     }

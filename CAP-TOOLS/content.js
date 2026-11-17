@@ -23,9 +23,7 @@ console.log("✅ CAP-TOOLS carregado!");
           elemento.value = value;
       };
   
-      //VERIFICAR O ERRO NO CONSOLE 
-      //(Uncaught TypeError: Cannot read properties of undefined (reading 'solicitacaoId'))
-      set("ctl00_contentCorpo_txtBoxOrdem", data.solicitacaoId); 
+      set("ctl00_contentCorpo_txtBoxOrdem", data.solicitacaoId);
       set("ctl00_contentCorpo_txtBoxUC", data.numerouc);
       set("ctl00_contentCorpo_txtBoxResponsavelTecnico", data.procurador_legal);
       set("ctl00_contentCorpo_txtBoxEmpresa", "-");
@@ -268,9 +266,12 @@ console.log("✅ CAP-TOOLS carregado!");
             document.getElementById("longitude1").value = match[2].replace(",", ".");
           }
           else {
-            return alert("Coordendas não encontradas!\nCertifique-se de que o texto contém coordenadas válidas.")
+            alert("Coordendas não encontradas!\nCertifique-se de que o texto contém coordenadas válidas.");
+            return false;
           }
         }
+
+        return true;
       };
 
       //função para preencher os campos com as coordenadas extraídas
@@ -315,12 +316,17 @@ console.log("✅ CAP-TOOLS carregado!");
       };
 
       document.getElementById("btn_extract_janela_flutuante").addEventListener("click", extractCoords);
-      document.getElementById("btn_go_cap").addEventListener("click", preencherCoords);
 
-      //função principal para o botão 'GO CAP', que extrai e preenche automaticamente
+      //função principal para o botão 'GO CAP': extrai as coordenadas do texto
+      //(se ainda não foram extraídas) e preenche os campos da página
       function extractEpreencherCoords() {
-        extractCoords(); //extrai as coordenadas do texto
-        preencherCampos(); //preenche os campos na página com as coordenadas extraídas
+        const campos_vazios = !document.getElementById("latitude1").value
+          || !document.getElementById("longitude1").value;
+
+        if (campos_vazios && !extractCoords())
+          return;
+
+        preencherCoords();
       }
 
       document.getElementById("btn_go_cap").addEventListener("click", extractEpreencherCoords);
@@ -370,7 +376,7 @@ console.log("✅ CAP-TOOLS carregado!");
       //atuliza texto da div
       div_atividade.textContent = `✅ SESSÃO ATIVA ${agora}`
     }
-    //roda a cada 4 minutos
+    //roda a cada 2 minutos
     setInterval(manterSessaoAtiva, 120000);
     //executa assim que carregar
     manterSessaoAtiva();

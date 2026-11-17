@@ -55,7 +55,7 @@ console.log("✅ MAPS-AUTO-COPY carregado!");
       document.body.appendChild(btn_temp);
 
       //inicia o contador regressivo dentro do novo botão
-      let count_temp = 15 //10 segundos
+      let count_temp = 15 //15 segundos
       btn_temp.textContent = `⏱️FECHANDO EM ${count_temp} SEGUNDOS...`;
 
       const interval_btn_temp = setInterval(() => {

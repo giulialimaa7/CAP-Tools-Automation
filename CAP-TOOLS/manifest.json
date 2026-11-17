@@ -5,10 +5,7 @@
   "description": "Ferramenta de utilidades para o CAP",
   "permissions": [
     "activeTab",
-    "scripting",
-    "clipboardRead",
-    "tabs",
-    "windows"
+    "scripting"
   ],
   "background": {
     "service_worker": "background.js",

@@ -1,0 +1,11 @@
+# XMLs gerados pelas extensões (contêm dados pessoais: CPF/CNPJ, e-mail, telefone, endereço)
+*.xml
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Dependências e arquivos do sistema
+node_modules/
+.DS_Store
+Thumbs.db
