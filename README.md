@@ -1,71 +1,83 @@
-# NFSe Report Automation
+# CAP Tools Automation
 
-Conjunto de scripts em Python desenvolvidos para automatizar a rotina de download de notas fiscais de serviço eletrônicas (NFS-e Nacional) e a geração de relatórios em planilha.
+Conjunto de extensões para Google Chrome desenvolvidas para automatizar tarefas repetitivas na análise de projetos de geração distribuída (energia solar fotovoltaica).
 
 ---
 
 ## Sobre o projeto
 
-O NFSe Report Automation reúne três scripts que eliminam o trabalho manual de baixar notas no portal e preencher a planilha de conferência.
+O CAP Tools Automation reúne três extensões independentes que eliminam o trabalho manual de copiar dados entre sistemas, preencher formulários e localizar coordenadas geográficas durante a análise de projetos.
 
-Os scripts consultam a API oficial do ADN (NFS-e Nacional) para baixar os XMLs das notas emitidas em um período, automatizam o navegador para baixar os PDFs e geram o relatório preenchendo uma planilha modelo em Excel.
+As extensões coletam os dados de uma solicitação no portal da distribuidora, geram um arquivo XML, preenchem automaticamente os campos do sistema CAP (Cadastro e Análise de Projetos) a partir desse arquivo e agilizam a conferência da localização no Google Maps.
 
-Todo o processamento acontece localmente na máquina do usuário, sem backend próprio.
+Todo o processamento acontece localmente no navegador, sem backend e sem dependências externas.
 
 ---
 
 # Funcionalidades
 
-## BAIXAR-XMLS (baixar_xmls_api.py)
-- Consulta das notas emitidas por um CNPJ em um período informado (dd/mm/aaaa)
-- Autenticação mTLS com certificado digital A1 (.pfx)
-- Paginação automática da listagem de notas
-- Download do XML de cada nota pela chave de acesso
-- Identificação de notas canceladas com o prefixo `CANCELADA_`
-- Organização dos arquivos por período na pasta `downloads/`
+## GENERATE-XML
+- Botão "GERAR-XML" na página de detalhes da solicitação
+- Coleta dos dados do titular, da unidade consumidora, dos módulos e do inversor
+- Suporte a CPF ou CNPJ e escolha do melhor e-mail disponível
+- Validação antes da geração do arquivo
+- Download automático do XML
+- Indicador de sessão ativa
 
-## BAIXAR-PDFS (main_baixar_pdfs.py)
-- Download dos PDFs das notas com automação de navegador (Playwright)
-- Compatível com execução como script ou como executável (.exe)
+## CAP-TOOLS
+- Leitura do XML e preenchimento automático dos campos do CAP
+- Padronização de tensão e subgrupo
+- Cálculo da quantidade de módulos e da área
+- Aviso visual de rateio ("COM RATEIO", "PRÉVIA S/ RATEIO", "NÃO TEM RATEIO")
+- Botão MAPS para abrir a localização no Google Maps
+- Botão EXTRACT para extrair coordenadas de um texto colado (graus/minutos/segundos ou decimal)
+- Botão GO CAP para preencher latitude e longitude no formulário
+- Botão SEARCH para consultar o inversor no site de consulta que desenvolvi (lê os dados de uma planilha do Google Sheets via API)
+- Indicador de sessão ativa
 
-## GERAR-RELATORIO (main_gerar_relatorio.py)
-- Preenchimento automático da planilha modelo com os dados das notas
-- Geração do relatório pronto para conferência
-- Compatível com execução como script ou como executável (.exe)
+## MAPS-AUTO-COPY
+- Botão para copiar as coordenadas decimais do Google Maps
+- Cópia automática ao carregar a página
+- Contagem regressiva para fechar a aba, com opção de estender o tempo
 
 ---
 
 # Tecnologias utilizadas
 
-## Linguagem e bibliotecas
-- Python
-- Playwright
-- openpyxl
-- requests
-- cryptography
-- PyAutoGUI
+## Extensões
+- JavaScript (vanilla)
+- Chrome Extensions (Manifest V3)
+- Content Scripts e Service Worker
+- Chrome Scripting API
 
-## Recursos utilizados
-- API oficial do ADN (NFS-e Nacional) e da Sefin Nacional
-- Autenticação mTLS com certificado A1
-- Leitura e geração de arquivos XML e XLSX
-- Variáveis de ambiente
-- PyInstaller para geração de executável
+## Recursos do navegador
+- DOM API
+- DOMParser e FileReader
+- Clipboard API
+- Blob e download de arquivos
+- Expressões regulares
+- CSS
 
 ---
 
 # Estrutura do projeto
 
 ```bash
-NFSe-Report-Automation/
-├── baixar_xmls_api.py
-├── main_baixar_pdfs.py
-├── main_gerar_relatorio.py
-├── requirements.txt
-├── modelo/
-├── src/
-├── test/
-└── downloads/        # gerado automaticamente, ignorado pelo git
+CAP-Tools-Automation/
+├── CAP-TOOLS/
+│   ├── background.js
+│   ├── content.js
+│   ├── manifest.json
+│   └── styles.css
+├── GENERATE-XML/
+│   ├── background.js
+│   ├── content.js
+│   ├── manifest.json
+│   └── styles.css
+└── MAPS-AUTO-COPY/
+    ├── content.js
+    ├── manifest.json
+    └── styles.css
 ```
 
 ---
@@ -75,94 +87,67 @@ NFSe-Report-Automation/
 ## Clone o repositório
 
 ```bash
-git clone https://github.com/giulialimaa7/NFSe-Report-Automation.git
-cd NFSe-Report-Automation
+git clone <URL_DO_REPOSITORIO>
 ```
 
 ---
 
-## Instale as dependências
+## Carregue as extensões no Chrome
 
-```bash
-python -m venv venv
-venv\Scripts\activate
+Não há dependências para instalar nem etapa de build. Cada pasta é uma extensão independente.
 
-pip install -r requirements.txt
-playwright install chromium
-```
+1. Acesse `chrome://extensions`
+2. Ative o **Modo do desenvolvedor**
+3. Clique em **Carregar sem compactação**
+4. Selecione a pasta da extensão (`CAP-TOOLS`, `GENERATE-XML` ou `MAPS-AUTO-COPY`)
+5. Repita para as demais extensões
 
----
-
-## Configure as credenciais
-
-As credenciais não ficam no código. Defina as variáveis de ambiente antes de executar:
-
-| Variável | Descrição |
-|---|---|
-| `NFSE_PFX_PATH` | Caminho completo do certificado A1 (`.pfx`) |
-| `NFSE_PFX_PASSWORD` | Senha do certificado |
-| `NFSE_CNPJ` | CNPJ do prestador, somente números |
-
-No PowerShell:
-
-```powershell
-$env:NFSE_PFX_PATH = "C:\caminho\para\certificado.pfx"
-$env:NFSE_PFX_PASSWORD = "sua-senha"
-$env:NFSE_CNPJ = "00000000000000"
-```
-
----
-
-## Gere o executável (opcional)
-
-```bash
-pip install pyinstaller
-pyinstaller --onefile --name baixar_pdfs main_baixar_pdfs.py
-pyinstaller --onefile --name gerar_relatorio main_gerar_relatorio.py
-```
-
-Os executáveis ficam em `dist/`. Copie junto a pasta `modelo/` e a pasta `.playwright-browsers/`.
+> Após alterar qualquer arquivo, clique em **Recarregar** na extensão e atualize a página.
 
 ---
 
 # Fluxo de uso
 
-1. O usuário executa `baixar_xmls_api.py` informando a data inicial e a final
-2. O script lista as notas do período e baixa o XML de cada uma em `downloads/<periodo>/xmls/`
-3. Notas canceladas são identificadas pelo prefixo `CANCELADA_`
-4. O usuário executa `main_baixar_pdfs.py` para baixar os PDFs
-5. O usuário executa `main_gerar_relatorio.py` para preencher a planilha modelo
-6. O relatório gerado é conferido pelo usuário
-
-```bash
-python baixar_xmls_api.py 01/06/2026 09/06/2026
-python main_baixar_pdfs.py
-python main_gerar_relatorio.py
-```
+1. Na página de detalhes da solicitação, o usuário clica em **GERAR-XML** e o arquivo XML é baixado
+2. No CAP, o usuário seleciona o XML e os campos do formulário são preenchidos
+3. O indicador de rateio é exibido no canto da tela
+4. O botão **MAPS** abre a localização no Google Maps, onde a **MAPS-AUTO-COPY** copia as coordenadas
+5. Em **EXTRACT**, o usuário cola o texto com as coordenadas e clica em **EXTRAIR**
+6. O botão **GO CAP** preenche latitude e longitude no formulário
+7. O botão **SEARCH** consulta o fabricante do inversor informado
 
 ---
 
 # Privacidade e segurança
 
-- Os dados são processados localmente e nenhuma informação é enviada para servidor próprio
-- O certificado digital, a senha e o CNPJ não ficam no código: são lidos de variáveis de ambiente
-- Nunca versione o `.pfx`, senhas ou arquivos `.env`
-- Os XMLs, PDFs e relatórios gerados contêm dados fiscais e pessoais. Não os versione nem os compartilhe (a pasta `downloads/` está no `.gitignore`)
-- Utilize os scripts apenas com certificados e CNPJs que você tem autorização para operar
+- Os dados são processados localmente no navegador e nenhuma informação é armazenada ou enviada para servidor próprio
+- Os botões MAPS e SEARCH abrem sites externos e enviam, na URL, as coordenadas e o texto do campo do inversor
+- Os arquivos XML gerados contêm dados pessoais (CPF/CNPJ, e-mail, telefone e endereço). Não os versione nem os compartilhe
+- Utilize as extensões apenas em sistemas e com dados que você tem autorização para acessar
 
 ---
 
 # Diferenciais do projeto
 
-- Automação de uma rotina fiscal manual e repetitiva
-- Uso da API oficial da NFS-e Nacional com autenticação por certificado
-- Paginação e tratamento de notas canceladas
-- Execução como script ou como executável (.exe)
-- Projeto voltado a uma rotina real de trabalho
+- Automação de uma rotina manual e repetitiva
+- Três extensões independentes e de instalação simples
+- JavaScript puro, sem dependências externas
+- Padronização e validação dos dados antes do preenchimento
+- Reconhecimento de coordenadas em mais de um formato
+- Projeto voltado a uma rotina real de análise de projetos
 
 ---
 
 # Melhorias futuras
 
-- Remover o limite de 10 notas usado em modo de teste no download dos XMLs
-- Incluir `requests` e `cryptography` no
+- Restringir as URLs (`matches`) da CAP-TOOLS ao endereço do sistema CAP (hoje a extensão roda em qualquer página e só age quando o título corresponde)
+- Tornar os seletores e as expressões regulares mais resistentes a mudanças no layout dos sistemas
+- Configuração dos tempos de sessão e de contagem por uma tela da extensão
+- Unificar as extensões em um único pacote
+- Testes automatizados
+
+---
+
+# Autor
+
+Desenvolvido por Giulia Vargas.
